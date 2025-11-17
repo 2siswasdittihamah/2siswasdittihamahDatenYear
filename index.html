@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Day • Date • Month • Year — English & Arabic | SDIT Tihamah</title>
+  <!-- External libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    :root{
+      --bg1:#08321f; /* deep green */
+      --bg2:#0e6b3a; /* lighter green */
+      --card:#ffffffee;
+      --accent:#ffd54a;
+      --muted:#e9f5ef;
+      --glass: rgba(255,255,255,0.06);
+      --radius:18px;
+      --maxw:1100px;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:radial-gradient(circle at 10% 10%, rgba(255,255,255,0.02), transparent 15%), linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--muted)}
+    .container{max-width:var(--maxw);margin:28px auto;padding:26px;border-radius:20px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));box-shadow:0 8px 30px rgba(0,0,0,0.45)}
+
+    /* Top logo */
+    header{display:flex;align-items:center;justify-content:center;gap:16px}
+header img.logo {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%; /* opsional, biar glow melingkar */
+  box-shadow: 0 0 20px 5px rgba(173, 255, 47, 0.8), /* cahaya dekat */
+              0 0 40px 15px rgba(173, 255, 47, 0.6), /* cahaya sedang */
+              0 0 60px 25px rgba(173, 255, 47, 0.4); /* cahaya jauh */
+  animation: glowPulse 2s infinite alternate;
+}
+
+/* Animasi glow berdenyut */
+@keyframes glowPulse {
+  from {
+    box-shadow: 0 0 15px 3px rgba(173, 255, 47, 0.7),
+                0 0 30px 10px rgba(173, 255, 47, 0.5),
+                0 0 50px 20px rgba(173, 255, 47, 0.3);
+  }
+  to {
+    box-shadow: 0 0 25px 8px rgba(173, 255, 47, 1),
+                0 0 50px 20px rgba(173, 255, 47, 0.8),
+                0 0 70px 30px rgba(173, 255, 47, 0.6);
+  }
+}
+    header h1{font-size:20px;margin:0;text-align:center;color:var(--accent);text-shadow:0 2px 20px rgba(0,0,0,0.6)}
+
+    /* Falling stars decor */
+    .stars{pointer-events:none;position:fixed;inset:0;z-index:0;overflow:hidden}
+    .star{position:absolute;width:3px;height:60px;background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0));opacity:0.12;transform:rotate(25deg);filter:blur(0.3px)}
+
+    /* Card */
+    .card{position:relative;background:var(--card);color:#0a2f20;padding:18px;border-radius:12px;margin:18px 0}
+    .grid{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+
+    table{width:100%;border-collapse:collapse;background:transparent}
+    th,td{padding:8px 10px;border-radius:6px}
+    thead th{background:linear-gradient(90deg,#eafaf0,#f9fff8);color:#08321f;font-weight:700}
+    tbody tr:nth-child(odd) td{background:linear-gradient(90deg, rgba(8,50,31,0.02), rgba(14,107,58,0.01))}
+    tbody tr:hover td{background:linear-gradient(90deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));}
+
+    .arabic{font-family: 'Scheherazade New', 'Amiri', serif; font-size:20px;direction:rtl;text-align:right}
+    .english{font-weight:600;color:#063b2a}
+    .trans{color:#2b5b44}
+
+    /* Buttons */
+    .controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+    button{background:linear-gradient(180deg,var(--accent),#ffdd57);border:none;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}
+
+    /* watermark - visible on page and will be captured by html2canvas when printing to PDF */
+    .watermark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);opacity:0.06;z-index:0;pointer-events:none;max-width:60%;}
+
+    footer{font-size:13px;color:#dff3e6;text-align:center;margin-top:8px}
+
+    /* Usage list */
+    .usage li{margin:6px 0}
+  </style>
+</head>
+<body>
+  <div class="stars" aria-hidden>
+    <!-- generate many falling-star divs via JS -->
+  </div>
+
+  <div class="container" id="pageRoot">
+    <header>
+      <img src="LOGO SDIT 2023.png" alt="Logo SDIT Tihamah" class="logo" id="siteLogo">
+    </header>
+    <h1 style="text-align:center;margin-top:8px">Day • Date • Month • Year — English &amp; Arabic</h1>
+
+    <!-- watermark image (must exist) -->
+    <img src="logo-sdit-tihamah.png" class="watermark" alt="watermark-logo">
+
+    <div class="card">
+      <h2>Ringkasan materi</h2>
+      <p>Di bawah ini terdapat daftar Days (hari), Months (bulan), contoh Date (tanggal) dan Years (tahun) dalam bahasa Inggris dan bahasa Arab (dengan harakat). Tidak ada transliterasi latin pada bagian Arab.</p>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h3>Days — Hari</h3>
+        <table id="daysTable">
+          <thead>
+            <tr><th>No</th><th>English</th><th>Arabic (harakat)</th><th>Terjemahan (ID)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td class="english">Sunday</td><td class="arabic">الأَحَدُ</td><td class="trans">Minggu</td></tr>
+            <tr><td>2</td><td class="english">Monday</td><td class="arabic">الإِثْنَيْنِ</td><td class="trans">Senin</td></tr>
+            <tr><td>3</td><td class="english">Tuesday</td><td class="arabic">الثُّلَاثَاءُ</td><td class="trans">Selasa</td></tr>
+            <tr><td>4</td><td class="english">Wednesday</td><td class="arabic">الأَرْبِعَاءُ</td><td class="trans">Rabu</td></tr>
+            <tr><td>5</td><td class="english">Thursday</td><td class="arabic">الخَمِيسُ</td><td class="trans">Kamis</td></tr>
+            <tr><td>6</td><td class="english">Friday</td><td class="arabic">الجُمُعَةُ</td><td class="trans">Jumat</td></tr>
+            <tr><td>7</td><td class="english">Saturday</td><td class="arabic">السَّبْتُ</td><td class="trans">Sabtu</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h3>Months — Bulan</h3>
+        <table id="monthsTable">
+          <thead>
+            <tr><th>No</th><th>English</th><th>Arabic (harakat)</th><th>Terjemahan (ID)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td class="english">January</td><td class="arabic">يَنَايِرُ</td><td class="trans">Januari</td></tr>
+            <tr><td>2</td><td class="english">February</td><td class="arabic">فِبْرَائِيرُ</td><td class="trans">Februari</td></tr>
+            <tr><td>3</td><td class="english">March</td><td class="arabic">مَارِسُ</td><td class="trans">Maret</td></tr>
+            <tr><td>4</td><td class="english">April</td><td class="arabic">أَبْرِيلُ</td><td class="trans">April</td></tr>
+            <tr><td>5</td><td class="english">May</td><td class="arabic">مَايُو</td><td class="trans">Mei</td></tr>
+            <tr><td>6</td><td class="english">June</td><td class="arabic">يُونْيُو</td><td class="trans">Juni</td></tr>
+            <tr><td>7</td><td class="english">July</td><td class="arabic">يُولْيُو</td><td class="trans">Juli</td></tr>
+            <tr><td>8</td><td class="english">August</td><td class="arabic">أَغُسْطُسُ</td><td class="trans">Agustus</td></tr>
+            <tr><td>9</td><td class="english">September</td><td class="arabic">سِبْتَمْبِرُ</td><td class="trans">September</td></tr>
+            <tr><td>10</td><td class="english">October</td><td class="arabic">أُكْتُوبَرُ</td><td class="trans">Oktober</td></tr>
+            <tr><td>11</td><td class="english">November</td><td class="arabic">نُوفَمْبِرُ</td><td class="trans">November</td></tr>
+            <tr><td>12</td><td class="english">December</td><td class="arabic">دِيسَمْبِرُ</td><td class="trans">Desember</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h3>Examples — Tanggal & Tahun (Date & Years)</h3>
+        <table id="datesTable">
+          <thead>
+            <tr><th>No</th><th>English</th><th>Arabic (harakat)</th><th>Terjemahan (ID)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td class="english">1 January 2025</td><td class="arabic">الأَوَّلُ مِنْ يَنَايِرَ ٢٠٢٥</td><td class="trans">1 Januari 2025</td></tr>
+            <tr><td>2</td><td class="english">14 February 2024</td><td class="arabic">الرَّابِعَ عَشَرَ مِنْ فِبْرَائِيرَ ٢٠٢٤</td><td class="trans">14 Februari 2024</td></tr>
+            <tr><td>3</td><td class="english">25 December 2023</td><td class="arabic">الخَامِسُ وَالعِشْرُونَ مِنْ دِيسَمْبِرَ ٢٠٢٣</td><td class="trans">25 Desember 2023</td></tr>
+            <tr><td>4</td><td class="english">31 October 2022</td><td class="arabic">الأَوْلُ وَالثَّلَاثُونَ مِنْ أُكْتُوبَرَ ٢٠٢٢</td><td class="trans">31 Oktober 2022</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h3>Useful Phrases — Pemakaian Sehari-hari</h3>
+        <ul class="usage">
+          <li><strong>What day is today?</strong> — <em class="arabic">مَا اليَوْمُ؟</em> (Digunakan untuk menanyakan hari sekarang.)</li>
+          <li><strong>My birthday is 5 March.</strong> — <em class="arabic">عِيدُ مِيلَادِيَ الْخَامِسُ مِنْ مَارِسَ.</em></li>
+          <li><strong>The school holiday starts on 20 December.</strong> — <em class="arabic">تَبْدَأُ إِجَازَةُ الْمَدْرَسَةِ فِي العِشْرِينَ مِنْ دِيسَمْبِرَ.</em></li>
+          <li><strong>See you next Monday.</strong> — <em class="arabic">أَرَاكَ يَوْمَ الإِثْنَيْنِ الْقَادِمِ.</em></li>
+        </ul>
+      </section>
+
+    </div>
+
+    <div class="controls">
+      <button id="downloadExcel">Download Excel (.xlsx)</button>
+      <button id="printPdf">Cetak PDF (dengan watermark)</button>
+      <button id="downloadCsv">Download CSV</button>
+    </div>
+
+    <footer>
+      <div>RUMAH BELAJAR SDIT</div>
+    </footer>
+  </div>
+
+  <script>
+    // create decorative falling stars
+    const starsEl = document.querySelector('.stars');
+    for(let i=0;i<28;i++){const s=document.createElement('div');s.className='star';s.style.left=(Math.random()*100)+'%';s.style.top=(Math.random()*100)+'%';s.style.height=(20+Math.random()*140)+'px';s.style.opacity=0.06+Math.random()*0.18;starsEl.appendChild(s)}
+
+    // Collect tables data into arrays for Excel/CSV
+    function collectTableData(){
+      const sheets = {};
+      ['daysTable','monthsTable','datesTable'].forEach(id=>{
+        const tbl = document.getElementById(id);
+        const rows = [];
+        const trs = tbl.querySelectorAll('thead tr, tbody tr');
+        trs.forEach(tr=>{
+          const cols = Array.from(tr.querySelectorAll('th,td')).map(td=>td.innerText.trim());
+          rows.push(cols);
+        });
+        sheets[id] = rows;
+      });
+      return sheets;
+    }
+
+    // Download Excel using SheetJS
+    document.getElementById('downloadExcel').addEventListener('click', ()=>{
+      const sheets = collectTableData();
+      const wb = XLSX.utils.book_new();
+      Object.entries(sheets).forEach(([name,rows])=>{
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        const prettyName = name.replace('Table','');
+        XLSX.utils.book_append_sheet(wb, ws, prettyName);
+      });
+      XLSX.writeFile(wb, 'SDIT-Tihamah_Days-Months-Dates.xlsx');
+    });
+
+    // Download CSV of all tables concatenated
+    document.getElementById('downloadCsv').addEventListener('click', ()=>{
+      const sheets = collectTableData();
+      let csv = '';
+      Object.values(sheets).forEach(rows=>{
+        rows.forEach(r=>{csv += r.map(c=>`"${c.replace(/"/g,'""')}"`).join(',') + '\n'});
+        csv += '\n';
+      });
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'SDIT-Tihamah_Days-Months-Dates.csv'; a.click(); URL.revokeObjectURL(url);
+    });
+
+    // Print to PDF using html2canvas + jsPDF (will include watermark image as placed in the page)
+    document.getElementById('printPdf').addEventListener('click', async ()=>{
+      const root = document.getElementById('pageRoot');
+      // temporarily increase background for better capture
+      const origBg = document.body.style.background;
+      try{
+        window.scrollTo(0,0);
+        const canvas = await html2canvas(root, {scale:2, useCORS:true, allowTaint:true});
+        const imgData = canvas.toDataURL('imagePNG');
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({unit:'px', format:[canvas.width, canvas.height]});
+        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+        pdf.save('SDIT-Tihamah_Days-Months-Dates.pdf');
+      }catch(e){
+   
+        document.body.style.background = origBg;
+      }
+    });
+
+    // Accessibility: allow keyboard download via Enter for buttons
+    document.querySelectorAll('button').forEach(b=>b.addEventListener('keyup', e=>{if(e.key==='Enter')b.click()}));
+  </script>
+</body>
+</html>
